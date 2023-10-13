@@ -24,11 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 # Will need this API key to be able to call ATTOM apis.
 ATTOM_API_KEY = os.getenv('ATTOM_API_KEY')
-
+# Attom property list API url
+PROPERTY_LIST_URL = 'https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/address?postalcode={}&page=1&pagesize=100'
+# Attom property detail API url
+PROPERTY_DETAIL_URL = 'https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detail?attomid={}'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition

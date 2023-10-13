@@ -1,41 +1,24 @@
-import requests
+from attom.models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.conf import settings
-
-
-def get_headers():
-    headers = {
-        "Content-Type": "application/json; charset=utf-8",
-        "apikey": settings.ATTOM_API_KEY
-    }
-    return headers
+from attom.serializers import *
 
 
 class PropertyList(APIView):
     def get(self, request):
         # Get prepared to call Attom property list API.
-        headers = get_headers()
-        url = 'https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/address?postalcode=82009&page=1&pagesize=100'
-        response = None
-        try:
-            response = requests.get(url=url, headers=headers)
-            json_response = response.json()
-            return Response(json_response, status=status.HTTP_200_OK)
-        except Exception:
-            return Response('Something was wrong about this property list API.', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        properties = Property.objects.all()
+        serializer = PropertySerializer(properties, many=True)
+        return Response({'message': 'successful', 'data': serializer.data}, status=status.HTTP_200_OK)
 
 
 class PropertyDetail(APIView):
-    def get(self, request, attom_id):
-        headers = get_headers()
-        # 228520
-        url = ('https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detail?attomid={}'.format(attom_id))
-        response = None
+    def get(self, request, id):
         try:
-            response = requests.get(url=url, headers=headers)
-            json_response = response.json()
-            return Response(json_response, status=status.HTTP_200_OK)
-        except Exception:
-            return Response('Something was wrong about this property detail API.', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            properties = Property.objects.get(id=id)
+            serializer = PropertySerializer(properties)
+            return Response({'message': 'successful', 'data': serializer.data}, status=status.HTTP_200_OK)
+        except Property.DoesNotExist:
+            return Response({'message': 'The passed-in property ID does not exist.', 'data': {}},
+                            status=status.HTTP_400_BAD_REQUEST)
